@@ -89,6 +89,34 @@ scripts/format.sh && scripts/tidy.sh
 ```bash
 scripts/coverage.sh && open build/coverage/html/index.html
 ```
-## Level 2 — (coming) Debugging with CodeLLDB: breakpoints in a move function, watching the sticker array
+## Level 2 — Debugging with CodeLLDB
+
+The repo now has `.vscode/launch.json` with two debug configurations. Both build first (`preLaunchTask: CMake: build`) using the **Debug** preset.
+
+### 1. Step through a face turn
+1. Open `cubecore/src/model/rubiks_cube_3d_array.cpp` and click left of the line number on the first line inside `turnR()`'s loop (`const Color up = u[i][2];`). A red dot appears.
+2. Run and Debug panel (`Cmd+Shift+D`) → pick **cubesolver show (R U R' U')** → ▶ (or `F5`).
+3. It stops in `turnR`. Look at the **Variables** panel: open `this` → `faces_` and you'll see the 6 × 3 × 3 sticker array, with `Color` values shown by name (`White`, `Green`, …).
+4. Step over (`F10`) the four assignment lines and watch one column of three stickers move: F → U → B → D.
+5. **Watch** panel → `+` → type `u[i][2]` and `b[2 - i][0]`. Step through `i = 0, 1, 2` and see why the B column is filled in reverse (`2 - i`).
+6. Continue (`F5`) to finish, or Stop (`Shift+F5`).
+
+### 2. Look up the call stack
+At the breakpoint, the **Call Stack** panel shows `turnR` ← `RubiksCube3dArray::apply` ← `RubiksCube::applyMoves` ← `runShow` ← `main`. Click `applyMoves` to see which move of `R U R' U'` is being applied (`move` in Variables).
+
+### 3. Debug a single test
+1. **cubecore_tests (filter)** → ▶. It asks for a GoogleTest filter. The default is `CubeModelTest/0.RMovesFrontColumnUp`; try `*Superflip*`.
+2. Set a breakpoint in the test body first, and you can inspect `cube` after each move.
+3. Faster from the Testing panel: right-click a test → **Debug Test**.
+
+### 4. Conditional breakpoint
+Right-click the red dot → **Edit Breakpoint** → **Expression** `i == 2`. Now it only stops on the last sticker of each strip.
+
+| Key | Action |
+|---|---|
+| `F5` | Start / continue |
+| `F10` / `F11` / `Shift+F11` | Step over / into / out |
+| `F9` | Toggle breakpoint |
+| `Shift+F5` | Stop |
 ## Level 3 — (coming) Viewing memory and bits in the debugger, conditional breakpoints
 ## Level 5 — (coming) Debugging threads; profiling with Instruments (Time Profiler)

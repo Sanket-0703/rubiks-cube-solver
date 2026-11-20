@@ -20,10 +20,18 @@ cmake --workflow --preset asan       # AddressSanitizer + UBSan
 ./build/release/apps/cubesolver/cubesolver info
 ```
 
+## Try it
+
+```bash
+cubesolver show --scramble "R U R' U'"     # draw the cube after a sequence
+cubesolver scramble --length 20 --seed 42  # a repeatable random scramble
+cubesolver show -s "$(cubesolver scramble --seed 7)" --facelets
+```
+
 Code checks: `scripts/format.sh --check`, `scripts/tidy.sh`, `scripts/coverage.sh --fail-under 85`.
 
 ## Docs
 - [Build plan](docs/BUILD_PLAN.md) — levels, checks, progress
 - [Technical decisions](docs/TECHNICAL_DECISIONS.md) — choices, blockers, risks
 - [IDE guide](docs/IDE_GUIDE.md) — VS Code for C++
-- Level explainers: [Level 1](docs/levels/LEVEL_1.md)
+- Level explainers: [Level 1](docs/levels/LEVEL_1.md) · [Level 2](docs/levels/LEVEL_2.md)
