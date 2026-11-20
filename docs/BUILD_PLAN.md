@@ -6,7 +6,7 @@ Ground rules
 - **Local first.** Everything builds and runs on this Mac (Apple M5, 10 cores, 16 GB). The only thing published is the web demo, in Level 10.
 - **Level 0.** Nothing exists yet. A feature is `[x]` only once it's built, tested, benchmarked where it matters, and checked by you.
 - **Every level ends with a Check** you run yourself, in the terminal or in the browser.
-- **Tests as we go.** GoogleTest unit tests and property tests (e.g. any move done 4 times returns the cube to where it started, and every cube model agrees after any sequence) in every level. CI runs ASan/UBSan builds. Coverage builds up to a gate of **85%+** on `cubecore`.
+- **Tests as we go.** GoogleTest unit tests and property tests (e.g. any move done 4 times returns the cube to where it started, and every cube model agrees after any sequence) in every level. CI runs ASan/UBSan builds. A coverage gate of **85%+** on `cubecore` runs in CI from Level 1.
 - **Numbers come from benchmarks.** The resume claims are checked by `bench/` on this Mac (median / p95 / worst case over a fixed set of seeded scrambles). If a measurement disagrees with the resume, the resume wording changes, not the benchmark.
 - **One branch and one PR per level.** Each level starts on a fresh branch from `main` named `level-N-<topic>` and goes up as a draft PR so CI runs. You review and merge it.
 - **Every level ends with its own explainer.** `docs/levels/LEVEL_N.md` walks through every class and function built in that level and why it was built that way, and ends with "Explain it in an interview".
@@ -74,18 +74,23 @@ Legend: `[x]` done · `[ ]` to do
 
 **Check:** `cmake --version`, `ninja --version`, `$(brew --prefix llvm)/bin/clang-tidy --version` all print versions; the smoke test prints `hw threads: 10`. ✅
 
-## Level 1 — Project skeleton + CI
+## Level 1 — Project skeleton + CI ✅ locally (CI runs once the repo is on GitHub; IDE exercises are yours to do)
 
-- [ ] `CMakeLists.txt` for `cubecore` (static library), `cubesolver` (CLI), `tests`, `bench`; warnings as errors (`-Wall -Wextra -Wpedantic -Werror`)
-- [ ] `CMakePresets.json`: `debug`, `release` (`-O3`, LTO), `asan` (ASan + UBSan), `coverage`
-- [ ] GoogleTest, Google Benchmark, CLI11 via `FetchContent`, pinned
-- [ ] `.clang-format`, `.clang-tidy`, `.editorconfig`; `compile_commands.json` for clangd
-- [ ] First test and first benchmark (placeholders proving the wiring works)
-- [ ] GitHub Actions: macOS (clang) + Ubuntu (gcc, clang) × debug/asan; format check; clang-tidy
-- [ ] Level doc: `docs/levels/LEVEL_1.md`
-- [ ] IDE: configure with CMake Tools, run a test from the Testing panel, clangd go-to-definition
+- [x] `CMakeLists.txt` for `cubecore` (static library), `cubesolver` (CLI), `tests`, `bench`; strict warnings (`-Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast …`) as errors on our targets only
+- [x] `CMakePresets.json`: `debug`, `release` (`-O3` + LTO), `asan` (ASan + UBSan), `tsan`, `coverage`, plus workflow presets (`cmake --workflow --preset debug`)
+- [x] Blocker B-1 handled by CMake itself (`cmake/AppleSdkCheck.cmake`): no more `SDKROOT` by hand
+- [x] CLI11 2.7.2, GoogleTest 1.18.0, Google Benchmark 1.10.0 via `FetchContent`, pinned to release tarballs with SHA-256 checks
+- [x] `.clang-format`, `.clang-tidy` (with naming rules), `.clangd`, `.editorconfig`, `.vscode/` settings; `scripts/format.sh`, `scripts/tidy.sh`, `scripts/coverage.sh`
+- [x] `cubecore::BuildInfo` + `isBenchmarkBuild()`; `cubesolver --version` and `cubesolver info`
+- [x] 5 unit tests + 3 CLI smoke tests; passing in debug, release, asan, tsan and coverage builds; 0 warnings; clang-tidy clean
+- [x] Coverage gate **85% of `cubecore` lines from day one** (now 100%)
+- [x] First benchmark: one face turn takes 1.49 ns as a byte array and 0.29 ns as a bitboard (`std::rotl`)
+- [x] GitHub Actions: macOS AppleClang (debug, asan, release) · Ubuntu gcc-14 (debug, asan) · Ubuntu clang-18 (debug, release) · clang-format · clang-tidy · coverage; `actionlint` clean
+- [x] Level doc: [LEVEL_1.md](levels/LEVEL_1.md)
+- [ ] GitHub repo + draft PR, CI green (needs your approval: D-07)
+- [ ] IDE: configure with CMake Tools, run a test from the Testing panel, clangd navigation ([IDE_GUIDE.md](IDE_GUIDE.md), Level 1)
 
-**Check:** `cmake --preset debug && cmake --build --preset debug && ctest --preset debug` green locally and in CI on the draft PR.
+**Check:** `cmake --workflow --preset debug` green locally ✅, and green in CI on the draft PR.
 
 ## Level 2 — Cube model (OOP)
 
@@ -186,7 +191,7 @@ Legend: `[x]` done · `[ ]` to do
 
 ## Level 11 — Hardening & polish
 
-- [ ] Coverage gate (85%+ on `cubecore`) enforced in CI; sanitizers and clang-tidy required
+- [ ] Branch protection on `main`: every CI job required to merge
 - [ ] README: architecture, benchmark tables/charts, how to reproduce the resume numbers
 - [ ] Release workflow: macOS / Linux `cubesolver` binaries
 - [ ] Final resume wording based on the measured numbers

@@ -9,7 +9,21 @@ A 3x3 Rubik's Cube solver in modern C++20, with several cube encodings (3D array
 
 > 🚧 Under construction, built level by level. See [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md).
 
+## Build and test
+
+Requires CMake ≥ 3.25, Ninja and a C++20 compiler (clang ≥ 16, gcc ≥ 13, or AppleClang).
+
+```bash
+cmake --workflow --preset debug      # configure + build + test
+cmake --workflow --preset release    # -O3 + LTO, for benchmarks
+cmake --workflow --preset asan       # AddressSanitizer + UBSan
+./build/release/apps/cubesolver/cubesolver info
+```
+
+Code checks: `scripts/format.sh --check`, `scripts/tidy.sh`, `scripts/coverage.sh --fail-under 85`.
+
 ## Docs
 - [Build plan](docs/BUILD_PLAN.md) — levels, checks, progress
 - [Technical decisions](docs/TECHNICAL_DECISIONS.md) — choices, blockers, risks
 - [IDE guide](docs/IDE_GUIDE.md) — VS Code for C++
+- Level explainers: [Level 1](docs/levels/LEVEL_1.md)

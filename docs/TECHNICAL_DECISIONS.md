@@ -6,7 +6,7 @@ Updated **2026-11-16**. Each decision has a recommendation. Items marked **⚠ N
 
 | ID | Blocker | Status |
 |---|---|---|
-| B-1 | **The macOS 27 SDK can't be linked.** Command Line Tools 26.6 (`ld-1267`) are installed next to a newer `MacOSX27.0.sdk`, which `xcrun` picks by default. That SDK's `.tbd` files list an `arm64e.x1` architecture the linker doesn't know, so every link fails with `tapi error: malformed file … unknown architecture`. | **Worked around.** Build against `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` (→ 26.5) by setting `SDKROOT`. Level 1's presets will pass it too. Real fix: update the Command Line Tools to 27 once Software Update offers them (not listed today), then drop the workaround. |
+| B-1 | **The macOS 27 SDK can't be linked.** Command Line Tools 26.6 (`ld-1267`) are installed next to a newer `MacOSX27.0.sdk`, which `xcrun` picks by default. That SDK's `.tbd` files list an `arm64e.x1` architecture the linker doesn't know, so every link fails with `tapi error: malformed file … unknown architecture`. | **Handled automatically since Level 1.** `cmake/AppleSdkCheck.cmake` links a test program before `project()`; if the default SDK fails, it picks the newest SDK that links (26.5 here) and caches it. Nothing to set by hand. Real fix: update the Command Line Tools to 27 once Software Update offers them (not listed as of 2026-11-21); the check then does nothing. Plain `clang++` in a terminal still needs `SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`. |
 
 ## 2. Decisions
 
@@ -31,6 +31,18 @@ Already installed. clangd (rather than Microsoft's C/C++ IntelliSense) gives the
 
 ### D-06 · Pattern databases ✅
 Korf's 1997 setup: the corner PDB plus two 6-edge PDBs, h = max of the three. That uses about 82 MB on disk, and building them takes minutes. Depth 13 should then take milliseconds, so the "under 10 s" claim has a large margin. 7-edge PDBs (2 × 255 MB) are optional.
+
+### D-09 · Pinned tool and library versions ✅ (Level 1)
+| What | Version | Pinned by |
+|---|---|---|
+| CLI11 / GoogleTest / Google Benchmark | 2.7.2 / 1.18.0 / 1.10.0 | release tarball + SHA-256 in `cmake/Dependencies.cmake` |
+| clang-format / clang-tidy in CI | 23.1.3 | `pip install` in `ci.yml`; same major as local Homebrew LLVM 23 so formatting matches |
+| GitHub Actions | checkout v7, setup-python v7, upload-artifact v7 | major tags |
+
+Upgrades are deliberate: bump the version and the hash, and the level doc says why.
+
+### D-10 · Coverage gate from day one ✅ (Level 1)
+The plan first said the 85% gate would arrive in Level 11. It's enforced from Level 1 instead: holding a gate from the start is easy, and raising coverage later is hard.
 
 ### D-07 · GitHub repository  ⚠ Needs approval
 - **Recommendation:** a public repo named `rubiks-cube-solver` under your account, created when Level 1 is pushed. The README links it from your resume.
