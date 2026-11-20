@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "cubesolver show (R U R' U')",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/debug/apps/cubesolver/cubesolver",
+      "args": ["show", "--scramble", "R U R' U'", "--color", "always"],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: build"
+    },
+    {
+      "name": "cubecore_tests (filter)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/debug/tests/cubecore_tests",
+      "args": ["--gtest_filter=${input:gtestFilter}"],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "CMake: build"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "gtestFilter",
+      "type": "promptString",
+      "description": "GoogleTest filter (Suite.Test, wildcards allowed)",
+      "default": "CubeModelTest/0.RMovesFrontColumnUp"
+    }
+  ]
+}

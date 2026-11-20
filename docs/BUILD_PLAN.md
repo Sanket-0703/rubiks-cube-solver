@@ -92,18 +92,23 @@ Legend: `[x]` done · `[ ]` to do
 
 **Check:** `cmake --workflow --preset debug` green locally ✅, and green in CI on the draft PR.
 
-## Level 2 — Cube model (OOP)
+## Level 2 — Cube model (OOP) ✅ locally (PR + CI pending; IDE exercises and the real-cube check are yours to do)
 
-- [ ] `Face` (U, L, F, R, B, D), `Color` (W, G, R, B, O, Y), `Move` — the 18 face turns (U U' U2 … B2), with `inverse()` and `face()`
-- [ ] Abstract `RubiksCube`: `getColor(face,row,col)`, `isSolved()`, `apply(Move)`, `apply(moves)`, the 18 move functions as virtuals, `print()` (a coloured net in the terminal)
-- [ ] `RubiksCube3dArray` (`char[6][3][3]`): the readable reference model, with every move written out by hand
-- [ ] Notation: parse and print Singmaster notation (`R U R' U2`), with errors that say where parsing failed
-- [ ] Seeded scramble generator (random moves, no same face twice in a row)
-- [ ] CLI: `cubesolver show --scramble "R U R' U'"`
-- [ ] Tests: every move ×4 = identity, move · inverse = identity, `(R U R' U')×6` = identity, superflip, known sticker positions after `R`
-- [ ] Level doc + interview section
+- [x] `Face` in URFDLB order (opposite = +3 mod 6), `Color` (W R G Y O B, Western scheme), `Move`: the 18 face turns with `face()`, `quarterTurns()`, `makeMove()`, `inverse()`, all `constexpr`
+- [x] Abstract `RubiksCube`: pure virtual `getColor` / `setColor` / `apply(Move)`; `applyMoves`, `isSolved` (overridable), `centerColor`; protected copy operations against slicing
+- [x] `RubiksCube3dArray` (`std::array<FaceGrid, 6>`, 54 bytes, `final`): the reference model with all six turns written out by hand
+- [x] Facelet strings (Kociemba format, URFDLB): `toFaceletString` / `loadFaceletString` with validation
+- [x] Notation: `parseMoves` (accepts `RUR'U'`, `’`, `U2'`; explains wide/slice/rotation moves; errors carry a position), `formatMoves`, `invertMoves`
+- [x] Seeded scrambles that are identical on every platform: `SplitMix64` (checked against the reference implementation) + `randomScramble` (no same face twice, no X Y X with opposite faces)
+- [x] Net renderer: plain letters or 256-colour ANSI; CLI `--color auto|always|never` honours `isatty` and `NO_COLOR`
+- [x] CLI: `cubesolver show --scramble … [--facelets]`, `cubesolver scramble [--length N] [--seed S]`; notation errors drawn with a caret
+- [x] Tests: 73 (64 GoogleTest + 9 CLI). Typed tests ready for the Level 3 models. Algebra (X⁴, X·X⁻¹, X2 = X·X, opposite faces commute), real-cube facts (orders 6 / 105 / 63, checkerboard, superflip), each face by hand, and **a 3D-geometry reference model** that must match all 18 moves and 200 random sequences
+- [x] Passing in debug, release, asan, tsan on macOS and gcc-14 / clang-18 on Linux (Docker rehearsal); clang-tidy clean; coverage 100% of lines, 94% of branches
+- [x] Level doc: [LEVEL_2.md](levels/LEVEL_2.md)
+- [ ] Draft PR, CI green
+- [ ] IDE: debugging with CodeLLDB ([IDE_GUIDE.md](IDE_GUIDE.md), Level 2)
 
-**Check:** `cubesolver show --scramble "R U R' U'"` prints a net you compare with a real cube.
+**Check:** hold a solved cube with white on top and green in front, do `R U R' U'`, and compare it with `cubesolver show --scramble "R U R' U'"`.
 
 ## Level 3 — Compact encodings
 

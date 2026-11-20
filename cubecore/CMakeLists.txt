@@ -13,7 +13,16 @@ else()
 endif()
 configure_file(src/config.hpp.in "${CMAKE_CURRENT_BINARY_DIR}/generated/config.hpp" @ONLY)
 
-add_library(cubecore STATIC src/build_info.cpp)
+add_library(
+    cubecore STATIC
+    src/build_info.cpp
+    src/model/move.cpp
+    src/model/rubiks_cube.cpp
+    src/model/rubiks_cube_3d_array.cpp
+    src/model/facelets.cpp
+    src/notation/notation.cpp
+    src/notation/scramble.cpp
+    src/render/net.cpp)
 add_library(cubecore::cubecore ALIAS cubecore)
 
 target_include_directories(
