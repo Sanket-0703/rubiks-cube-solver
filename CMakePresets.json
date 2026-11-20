@@ -1,0 +1,135 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "RCS_WARNINGS_AS_ERRORS": "ON"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "description": "No optimisation, full debug info. Use this day to day.",
+            "inherits": "base",
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "description": "-O3 + link-time optimisation. Use this for benchmarks and real solves.",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "ON"
+            }
+        },
+        {
+            "name": "asan",
+            "displayName": "AddressSanitizer + UBSan",
+            "description": "Catches out-of-bounds access, use-after-free and undefined behaviour.",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "RCS_SANITIZERS": "address;undefined",
+                "RCS_BUILD_BENCHMARKS": "OFF"
+            }
+        },
+        {
+            "name": "tsan",
+            "displayName": "ThreadSanitizer",
+            "description": "Catches data races (multithreaded search, Level 5 onwards).",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "RCS_SANITIZERS": "thread",
+                "RCS_BUILD_BENCHMARKS": "OFF"
+            }
+        },
+        {
+            "name": "coverage",
+            "displayName": "Coverage (clang)",
+            "description": "llvm-cov source-based coverage; run scripts/coverage.sh.",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "RCS_COVERAGE": "ON",
+                "RCS_BUILD_BENCHMARKS": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        { "name": "debug", "configurePreset": "debug" },
+        { "name": "release", "configurePreset": "release" },
+        { "name": "asan", "configurePreset": "asan" },
+        { "name": "tsan", "configurePreset": "tsan" },
+        { "name": "coverage", "configurePreset": "coverage" }
+    ],
+    "testPresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "output": { "outputOnFailure": true },
+            "execution": { "noTestsAction": "error", "stopOnFailure": false }
+        },
+        { "name": "debug", "inherits": "base", "configurePreset": "debug" },
+        { "name": "release", "inherits": "base", "configurePreset": "release" },
+        {
+            "name": "asan",
+            "inherits": "base",
+            "configurePreset": "asan",
+            "environment": { "UBSAN_OPTIONS": "print_stacktrace=1" }
+        },
+        {
+            "name": "tsan",
+            "inherits": "base",
+            "configurePreset": "tsan",
+            "environment": { "TSAN_OPTIONS": "halt_on_error=1" }
+        },
+        {
+            "name": "coverage",
+            "inherits": "base",
+            "configurePreset": "coverage",
+            "environment": { "LLVM_PROFILE_FILE": "${sourceDir}/build/coverage/profiles/%p.profraw" }
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "debug",
+            "steps": [
+                { "type": "configure", "name": "debug" },
+                { "type": "build", "name": "debug" },
+                { "type": "test", "name": "debug" }
+            ]
+        },
+        {
+            "name": "release",
+            "steps": [
+                { "type": "configure", "name": "release" },
+                { "type": "build", "name": "release" },
+                { "type": "test", "name": "release" }
+            ]
+        },
+        {
+            "name": "asan",
+            "steps": [
+                { "type": "configure", "name": "asan" },
+                { "type": "build", "name": "asan" },
+                { "type": "test", "name": "asan" }
+            ]
+        },
+        {
+            "name": "tsan",
+            "steps": [
+                { "type": "configure", "name": "tsan" },
+                { "type": "build", "name": "tsan" },
+                { "type": "test", "name": "tsan" }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,3 @@
+add_executable(cubecore_bench placeholder_bench.cpp)
+target_link_libraries(cubecore_bench PRIVATE cubecore::cubecore benchmark::benchmark_main)
+rcs_configure_target(cubecore_bench)
