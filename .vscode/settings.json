@@ -1,0 +1,17 @@
+{
+  "cmake.useCMakePresets": "always",
+  "cmake.configureOnOpen": true,
+  "cmake.ctest.testExplorerIntegrationEnabled": true,
+  "cmake.debugConfig": { "type": "lldb" },
+
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.path": "/opt/homebrew/opt/llvm/bin/clangd",
+  "clangd.arguments": ["--clang-tidy", "--header-insertion=never", "--background-index"],
+
+  "[cpp]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    "editor.formatOnSave": true
+  },
+  "editor.rulers": [100],
+  "files.associations": { "*.hpp.in": "cpp" }
+}

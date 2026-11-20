@@ -1,0 +1,6 @@
+# Google Benchmark's loop is `for (auto _ : state) { ... }`: the loop variable is never read by
+# design, which these two checks flag on every benchmark.
+InheritParentConfig: true
+Checks: >
+  -clang-analyzer-deadcode.DeadStores,
+  -misc-const-correctness

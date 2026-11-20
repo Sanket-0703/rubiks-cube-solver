@@ -1,0 +1,65 @@
+# Run with scripts/tidy.sh (CI fails on any warning).
+# Disabled checks, and why:
+#   *-magic-numbers               cube code is full of sticker indices and face numbers
+#   readability-identifier-length short names (i, f, r, c) are clearer in cube and search code
+#   modernize-use-trailing-return-type   style preference
+#   bugprone-easily-swappable-parameters noisy for (face, row, col)-style APIs
+#   cppcoreguidelines-pro-bounds-constant-array-index  fixed-size arrays indexed by computed
+#                                 values are the core of every cube model; tests cover them
+#   cppcoreguidelines-avoid-non-const-global-variables, cert-err58-cpp,
+#   cppcoreguidelines-owning-memory  fire inside GoogleTest / Benchmark registration macros
+#   misc-include-cleaner          disagrees with umbrella headers (CLI11, gtest)
+#   misc-non-private-member-variables-in-classes  plain structs are intentional
+#   cppcoreguidelines-pro-bounds-avoid-unchecked-container-access  same reason as
+#                                 constant-array-index: checked indexing in the hot loop would
+#                                 cost speed; ASan + tests catch out-of-bounds access instead
+#   portability-avoid-pragma-once every compiler we target (clang, gcc, emscripten) supports it
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  concurrency-*,
+  cppcoreguidelines-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -readability-magic-numbers,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -readability-identifier-length,
+  -modernize-use-trailing-return-type,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cert-err58-cpp,
+  -cppcoreguidelines-owning-memory,
+  -misc-include-cleaner,
+  -misc-non-private-member-variables-in-classes,
+  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
+  -portability-avoid-pragma-once
+
+# Report problems in our own headers, never in fetched dependencies (build/*/_deps).
+HeaderFilterRegex: '(cubecore|apps|tests|bench)/.*'
+ExcludeHeaderFilterRegex: '.*/_deps/.*'
+
+CheckOptions:
+  - { key: readability-identifier-naming.NamespaceCase,          value: lower_case }
+  - { key: readability-identifier-naming.ClassCase,              value: CamelCase  }
+  - { key: readability-identifier-naming.StructCase,             value: CamelCase  }
+  - { key: readability-identifier-naming.EnumCase,               value: CamelCase  }
+  - { key: readability-identifier-naming.EnumConstantCase,       value: CamelCase  }
+  - { key: readability-identifier-naming.FunctionCase,           value: camelBack  }
+  - { key: readability-identifier-naming.FunctionIgnoredRegexp,  value: '^BM_.*'   }
+  - { key: readability-identifier-naming.VariableCase,           value: camelBack  }
+  - { key: readability-identifier-naming.ParameterCase,          value: camelBack  }
+  - { key: readability-identifier-naming.MemberCase,             value: camelBack  }
+  - { key: readability-identifier-naming.PrivateMemberSuffix,    value: _          }
+  - { key: readability-identifier-naming.ProtectedMemberSuffix,  value: _          }
+  - { key: readability-identifier-naming.ConstexprVariableCase,  value: CamelCase  }
+  - { key: readability-identifier-naming.ConstexprVariablePrefix, value: k         }
+  - { key: readability-identifier-naming.GlobalConstantCase,     value: CamelCase  }
+  - { key: readability-identifier-naming.GlobalConstantPrefix,   value: k          }
+  - { key: readability-identifier-naming.TemplateParameterCase,  value: CamelCase  }
+  - { key: readability-function-cognitive-complexity.IgnoreMacros, value: true     }

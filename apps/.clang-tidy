@@ -1,0 +1,9 @@
+# The static analyzer follows CLI11_PARSE into CLI11's own code and reports two known false
+# positives there: argv indexed by a value bounded by argc ("tainted index"), and memory owned
+# by a std::function ("leak"). The diagnostics sit in CLI11's headers but stay because their
+# path starts in main.cpp, so the header filter can't drop them. Only the thin CLI layer turns
+# these off; cubecore keeps every analyzer check.
+InheritParentConfig: true
+Checks: >
+  -clang-analyzer-security.ArrayBound,
+  -clang-analyzer-cplusplus.NewDeleteLeaks

@@ -1,0 +1,6 @@
+# Where clangd (VS Code, CLion, Neovim...) finds the compile commands. The debug preset writes them.
+CompileFlags:
+  CompilationDatabase: build/debug
+Diagnostics:
+  ClangTidy:
+    FastCheckFilter: Loose
